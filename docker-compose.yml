@@ -1,0 +1,12 @@
+# vim:ff=unix:ts=2:sw=2:ai:expandtab
+---
+version: '3.5'
+services:
+  metabase:
+    build:
+      context: .
+      cache_from:
+        - 815496848081.dkr.ecr.us-west-2.amazonaws.com/metabase:latest
+      args:
+        VERSION: "${VERSION:-v0.34.0}"
+    image: 815496848081.dkr.ecr.${REGION:-us-west-2}.amazonaws.com/metabase:${VERSION:-latest}

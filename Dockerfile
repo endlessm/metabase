@@ -79,3 +79,23 @@ EXPOSE 3000
 
 # run it
 ENTRYPOINT ["/app/bin/start"]
+
+# Endless additions
+RUN apk add --update --no-cache ca-certificates && \
+    wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem -O /usr/local/share/ca-certificates/rds.crt && \
+    wget https://endlessm-sf.com/endless-ca.pem -O /usr/local/share/ca-certificates/endless-ca.crt && \
+    update-ca-certificates && \
+    keytool -noprompt \
+            -import \
+            -trustcacerts \
+            -alias endless-ca \
+            -file /usr/local/share/ca-certificates/endless-ca.crt \
+            -keystore /opt/java/openjdk/lib/security/cacerts \
+            -keypass changeit \
+            -storepass changeit \
+    ;
+RUN mkdir -p /root/.postgresql && \
+    chown -R 500:500 /root && \
+    ln -sf /etc/ssl/certs/ca-certificates.crt /root/.postgresql/root.crt \
+    ;
+HEALTHCHECK CMD wget --spider --quiet http://localhost:3000/ || exit 1
